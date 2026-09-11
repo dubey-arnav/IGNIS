@@ -42,3 +42,21 @@
   CREATE INDEX IF NOT EXISTS idx_industrial_sites_geom
       ON industrial_sites
       USING GIST (geom);
+
+  -- Groups of repeated detections believed to come from the same physical source
+  CREATE TABLE IF NOT EXISTS fire_clusters (
+      id                  SERIAL PRIMARY KEY,
+      geom                GEOMETRY(Point, 4326) NOT NULL,
+      first_detection     DATE,
+      last_detection      DATE,
+      total_detections    INTEGER,
+      active_days         INTEGER,
+      mean_frp            DOUBLE PRECISION,
+      max_frp             DOUBLE PRECISION,
+      persistence_score   DOUBLE PRECISION,
+      created_at          TIMESTAMP DEFAULT NOW()
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_fire_clusters_geom
+      ON fire_clusters
+      USING GIST (geom);
