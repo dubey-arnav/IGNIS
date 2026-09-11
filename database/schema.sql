@@ -24,3 +24,21 @@
   CREATE INDEX IF NOT EXISTS idx_thermal_events_geom
       ON thermal_events
       USING GIST (geom);
+
+  -- Industrial infrastructure from OpenStreetMap
+  CREATE TABLE IF NOT EXISTS industrial_sites (
+      id              SERIAL PRIMARY KEY,
+      osm_id          BIGINT,
+      name            VARCHAR(255),
+      type            VARCHAR(100),
+      latitude        DOUBLE PRECISION NOT NULL,
+      longitude       DOUBLE PRECISION NOT NULL,
+      geom            GEOMETRY(Point, 4326) NOT NULL,
+      tags            JSONB,
+      source          VARCHAR(20) DEFAULT 'OSM',
+      created_at      TIMESTAMP DEFAULT NOW()
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_industrial_sites_geom
+      ON industrial_sites
+      USING GIST (geom);
