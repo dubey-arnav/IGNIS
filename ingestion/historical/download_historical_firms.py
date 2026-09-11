@@ -24,6 +24,7 @@ while start < total_days_back:
     date_str = chunk_start_date.strftime("%Y-%m-%d")
 
     url = base_url.format(key=MAP_KEY, source=source, bbox=bbox, days=chunk_days, date=date_str)
+    print("Requesting URL:", url)
     print(f"Requesting {chunk_days} days starting {date_str} ...")
 
     response = requests.get(url)
