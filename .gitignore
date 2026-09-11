@@ -12,3 +12,4 @@ data/training/
 *.zip
 
 *.pyc
+osm_raw.json
