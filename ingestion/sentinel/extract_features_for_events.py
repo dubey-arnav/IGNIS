@@ -5,6 +5,7 @@ import rasterio
 import numpy as np
 import pandas as pd
 from io import BytesIO
+from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -42,7 +43,11 @@ def get_token():
 def buffer_bbox(lat, lon, half_size_deg=0.01):
     return [lon - half_size_deg, lat - half_size_deg, lon + half_size_deg, lat + half_size_deg]
 
-def fetch_and_calc(token, lat, lon):
+def fetch_and_calc(token, lat, lon, event_date):
+    center = datetime.strptime(str(event_date), "%Y-%m-%d")
+    time_from = (center - timedelta(days=30)).strftime("%Y-%m-%dT00:00:00Z")
+    time_to = (center + timedelta(days=30)).strftime("%Y-%m-%dT00:00:00Z")
+
     payload = {
         "input": {
             "bounds": {
@@ -52,8 +57,9 @@ def fetch_and_calc(token, lat, lon):
             "data": [{
                 "type": "sentinel-2-l2a",
                 "dataFilter": {
-                    "timeRange": {"from": "2026-08-01T00:00:00Z", "to": "2026-09-01T00:00:00Z"},
-                    "maxCloudCoverage": 50,
+                    "timeRange": {"from": time_from, "to": time_to},
+                    "maxCloudCoverage": 90,
+                    "mosaickingOrder": "leastCC",
                 },
             }],
         },
@@ -65,7 +71,10 @@ def fetch_and_calc(token, lat, lon):
     }
     headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
     r = requests.post(PROCESS_URL, headers=headers, json=payload)
+
+    print(f"    [DEBUG] status={r.status_code}")
     if r.status_code != 200:
+        print(f"    [DEBUG] body={r.text[:200]}")
         return None
 
     with rasterio.open(BytesIO(r.content)) as src:
@@ -73,6 +82,7 @@ def fetch_and_calc(token, lat, lon):
         scl = scl.astype(int)
 
     valid_mask = ~np.isin(scl, [0, 1, 3, 8, 9, 10])
+    print(f"    [DEBUG] valid pixels: {valid_mask.sum()} / {scl.size}")
     if valid_mask.sum() == 0:
         return None
 
@@ -90,15 +100,13 @@ def fetch_and_calc(token, lat, lon):
         "valid_pixel_fraction": float(valid_mask.sum() / scl.size),
     }
 
-# Pull ALL real event locations (no LIMIT — full run)
 with engine.connect() as conn:
-    result = conn.execute(text("SELECT id, latitude, longitude FROM thermal_events"))
+    result = conn.execute(text("SELECT id, latitude, longitude, event_date FROM thermal_events"))
     events = result.fetchall()
 
 os.makedirs("data", exist_ok=True)
 output_path = "data/sentinel_features.csv"
 
-# Resume support: skip events already saved from a previous (possibly crashed) run
 if os.path.exists(output_path):
     existing_df = pd.read_csv(output_path)
     done_event_ids = set(existing_df["event_id"])
@@ -107,15 +115,22 @@ else:
     done_event_ids = set()
 
 token = get_token()
+request_count = 0
+REFRESH_EVERY = 300
 
-for event_id, lat, lon in events:
+for event_id, lat, lon, event_date in events:
     if event_id in done_event_ids:
         continue
 
-    print(f"Fetching Sentinel-2 features for event {event_id} ({lat}, {lon})...")
-    feats = fetch_and_calc(token, lat, lon)
+    if request_count > 0 and request_count % REFRESH_EVERY == 0:
+        print("  Refreshing access token...")
+        token = get_token()
+
+    print(f"Fetching Sentinel-2 features for event {event_id} ({lat}, {lon}, {event_date})...")
+    feats = fetch_and_calc(token, lat, lon, event_date)
+    request_count += 1
     if feats is None:
-        print("  No usable data (cloud cover or no scene) — skipped")
+        print("  No usable data (cloud cover or no scene near this date) — skipped")
         continue
     feats["event_id"] = event_id
 
