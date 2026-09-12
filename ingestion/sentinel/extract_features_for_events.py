@@ -20,13 +20,13 @@ PROCESS_URL = "https://sh.dataspace.copernicus.eu/process/v1"
 evalscript = """
 //VERSION=3
 function setup() {
-return {
+  return {
     input: [{ bands: ["B03","B04","B08","B11","B12","SCL"] }],
     output: { bands: 6, sampleType: "FLOAT32" }
-};
+  };
 }
 function evaluatePixel(sample) {
-return [sample.B03, sample.B04, sample.B08, sample.B11, sample.B12, sample.SCL];
+  return [sample.B03, sample.B04, sample.B08, sample.B11, sample.B12, sample.SCL];
 }
 """
 
@@ -90,23 +90,37 @@ def fetch_and_calc(token, lat, lon):
         "valid_pixel_fraction": float(valid_mask.sum() / scl.size),
     }
 
-# Pull a small sample of real event locations to test against (limit while testing!)
+# Pull ALL real event locations (no LIMIT — full run)
 with engine.connect() as conn:
-    result = conn.execute(text("SELECT id, latitude, longitude FROM thermal_events LIMIT 5"))
+    result = conn.execute(text("SELECT id, latitude, longitude FROM thermal_events"))
     events = result.fetchall()
 
+os.makedirs("data", exist_ok=True)
+output_path = "data/sentinel_features.csv"
+
+# Resume support: skip events already saved from a previous (possibly crashed) run
+if os.path.exists(output_path):
+    existing_df = pd.read_csv(output_path)
+    done_event_ids = set(existing_df["event_id"])
+    print(f"Found existing progress: {len(done_event_ids)} events already processed — will skip those.")
+else:
+    done_event_ids = set()
+
 token = get_token()
-rows = []
+
 for event_id, lat, lon in events:
+    if event_id in done_event_ids:
+        continue
+
     print(f"Fetching Sentinel-2 features for event {event_id} ({lat}, {lon})...")
     feats = fetch_and_calc(token, lat, lon)
     if feats is None:
         print("  No usable data (cloud cover or no scene) — skipped")
         continue
     feats["event_id"] = event_id
-    rows.append(feats)
 
-df = pd.DataFrame(rows)
-os.makedirs("data", exist_ok=True)
-df.to_csv("data/sentinel_features.csv", index=False)
-print(f"\nSaved {len(df)} rows to data/sentinel_features.csv")
+    row_df = pd.DataFrame([feats])
+    write_header = not os.path.exists(output_path)
+    row_df.to_csv(output_path, mode="a", header=write_header, index=False)
+
+print("\nDone. Check data/sentinel_features.csv for results.")
