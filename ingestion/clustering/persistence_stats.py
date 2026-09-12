@@ -20,6 +20,7 @@ insert_sql = text("""
         (ST_SetSRID(ST_MakePoint(:lon, :lat), 4326),
         :first_detection, :last_detection, :total_detections,
         :active_days, :mean_frp, :max_frp, :persistence_score)
+    RETURNING id
 """)
 
 rows_inserted = 0
@@ -41,7 +42,7 @@ with engine.begin() as conn:
         time_span_days = max((last_detection - first_detection).days, 1)
         persistence_score = round(active_days / time_span_days, 4)
 
-        conn.execute(insert_sql, {
+        result = conn.execute(insert_sql, {
             "lat": float(center_lat),
             "lon": float(center_lon),
             "first_detection": first_detection,
@@ -52,6 +53,14 @@ with engine.begin() as conn:
             "max_frp": float(max_frp),
             "persistence_score": persistence_score,
         })
+        new_cluster_id = result.scalar()
+
+        event_ids = group["id"].tolist()
+        conn.execute(
+            text("UPDATE thermal_events SET cluster_id = :cid WHERE id = ANY(:ids)"),
+            {"cid": new_cluster_id, "ids": event_ids},
+        )
+
         rows_inserted += 1
 
 print(f"Inserted {rows_inserted} rows into fire_clusters")

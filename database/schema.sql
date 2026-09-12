@@ -60,3 +60,5 @@
   CREATE INDEX IF NOT EXISTS idx_fire_clusters_geom
       ON fire_clusters
       USING GIST (geom);
+
+  ALTER TABLE thermal_events ADD COLUMN IF NOT EXISTS cluster_id INTEGER;
