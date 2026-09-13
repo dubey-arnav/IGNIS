@@ -1,0 +1,43 @@
+{
+  "categorical": [
+    "confidence",
+    "daynight",
+    "nearest_facility_type"
+  ],
+  "numeric": [
+    "bright_ti4",
+    "bright_ti5",
+    "frp",
+    "nearest_facility_distance_m",
+    "facilities_within_radius",
+    "total_detections",
+    "active_days",
+    "cluster_mean_frp",
+    "cluster_max_frp",
+    "persistence_score",
+    "ndvi_mean",
+    "ndbi_mean",
+    "ndwi_mean",
+    "swir1_mean",
+    "swir2_mean",
+    "valid_pixel_fraction"
+  ],
+  "category_levels": {
+    "confidence": [
+      "h",
+      "l",
+      "n"
+    ],
+    "daynight": [
+      "D",
+      "N"
+    ],
+    "nearest_facility_type": [
+      "industrial_area",
+      "industrial_works",
+      "petroleum_well",
+      "pipeline",
+      "power_plant"
+    ]
+  }
+}
