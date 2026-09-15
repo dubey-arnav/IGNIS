@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.routers import events, health
+from app.routers import events, health, map_data
 
 app = FastAPI(
     title="IGNIS API",
@@ -22,6 +22,7 @@ app.add_middleware(
 
 app.include_router(health.router)
 app.include_router(events.router)
+app.include_router(map_data.router)
 
 
 @app.get("/")
