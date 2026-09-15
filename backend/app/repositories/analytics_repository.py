@@ -37,8 +37,8 @@ def timeline(db: Session, start_date=None, end_date=None):
         SELECT t.event_date, r.predicted_label, COUNT(*) AS count
         FROM thermal_events t
         JOIN risk_scores r ON r.event_id = t.id
-        WHERE (:start_date::date IS NULL OR t.event_date >= :start_date)
-          AND (:end_date::date   IS NULL OR t.event_date <= :end_date)
+        WHERE (CAST(:start_date AS date) IS NULL OR t.event_date >= :start_date)
+          AND (CAST(:end_date AS date)   IS NULL OR t.event_date <= :end_date)
         GROUP BY t.event_date, r.predicted_label
         ORDER BY t.event_date
     """), {"start_date": start_date, "end_date": end_date}).mappings().all()
