@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.routers import events, health, map_data
+from app.routers import alerts, analytics, classifications, events, health, map_data
 
 app = FastAPI(
     title="IGNIS API",
@@ -10,8 +10,6 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# Browsers block a React app on port 5173 from calling an API on port 8000
-# unless the API explicitly allows it. That permission is called CORS.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.CORS_ORIGINS,
@@ -23,6 +21,9 @@ app.add_middleware(
 app.include_router(health.router)
 app.include_router(events.router)
 app.include_router(map_data.router)
+app.include_router(classifications.router)
+app.include_router(analytics.router)
+app.include_router(alerts.router)
 
 
 @app.get("/")
