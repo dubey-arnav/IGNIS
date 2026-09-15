@@ -52,8 +52,8 @@ df["predicted_label"] = [CLASS_NAMES[i] for i in proba.argmax(axis=1)]
 # ---- Step 3: Base score from calibrated class probabilities ----
 SEVERITY_WEIGHTS = {
     "Other/Unknown": 0,
-    "Wildfire / Natural Fire": 20,
-    "Persistent Industrial Thermal Source": 60,
+    "Wildfire / Natural Fire": 60,
+    "Persistent Industrial Thermal Source": 20,
     "Industrial Fire": 100,
 }
 base_score = np.zeros(len(df))
