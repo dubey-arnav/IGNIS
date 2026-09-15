@@ -11,8 +11,8 @@ LABEL_MAP_PATH = "ml/training/label_mapping.json"
 TRAIN_DATA_PATH = "data/train_dataset.csv"
 
 SEVERITY_WEIGHTS = {
-    "Other/Unknown": 0, "Wildfire / Natural Fire": 20,
-    "Persistent Industrial Thermal Source": 60, "Industrial Fire": 100,
+    "Other/Unknown": 0, "Wildfire / Natural Fire": 60,
+    "Persistent Industrial Thermal Source": 20, "Industrial Fire": 100,
 }
 ADJUSTMENT_RANGE = 4
 
