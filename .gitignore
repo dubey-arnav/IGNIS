@@ -12,3 +12,4 @@ data/training/
 
 *.pyc
 osm_raw.json
+backend/.env
