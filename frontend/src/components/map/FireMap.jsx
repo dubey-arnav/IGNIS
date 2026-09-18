@@ -42,17 +42,13 @@ function BoundsWatcher({ onBoundsChange }) {
 
 export default function FireMap({ filters = {}, onSelectEvent }) {
   const [features, setFeatures] = useState([]);
-  const [bbox, setBbox] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
 
-    const params = { ...filters, limit: 5000 };
-    if (bbox) {
-      params.bbox = bbox.join(",");
-    }
+    const params = { ...filters, limit: 50000 };
 
     getMapData(params)
       .then((geojson) => {
@@ -72,18 +68,23 @@ export default function FireMap({ filters = {}, onSelectEvent }) {
     return () => {
       cancelled = true;
     };
-  }, [filters, bbox]);
+  }, [filters]);
 
   return (
     <div className="map-wrapper">
-      {loading && (
-        <div style={{ position: "absolute", top: 12, right: 12, zIndex: 1000, background: "rgba(255,255,255,0.9)", padding: "4px 12px", borderRadius: 20, boxShadow: "var(--shadow-sm)", fontSize: 12, fontWeight: 600 }}>
-          Updating Map Data...
+      {loading ? (
+        <div style={{ position: "absolute", top: 12, right: 12, zIndex: 1000, background: "rgba(255,255,255,0.95)", padding: "6px 14px", borderRadius: 20, boxShadow: "var(--shadow-sm)", fontSize: 12, fontWeight: 600 }}>
+          Loading Map Data...
+        </div>
+      ) : (
+        <div style={{ position: "absolute", top: 12, right: 12, zIndex: 1000, background: "rgba(255,255,255,0.95)", padding: "6px 14px", borderRadius: 20, boxShadow: "var(--shadow-sm)", fontSize: 12, fontWeight: 600, color: "var(--color-primary)" }}>
+          {features.length.toLocaleString()} Thermal Anomalies Detected
         </div>
       )}
       <MapContainer
         center={DEFAULT_CENTER}
         zoom={DEFAULT_ZOOM}
+        preferCanvas={true}
         style={{ height: "100%", width: "100%" }}
         zoomControl={true}
       >
@@ -91,7 +92,7 @@ export default function FireMap({ filters = {}, onSelectEvent }) {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
-        <BoundsWatcher onBoundsChange={setBbox} />
+
 
         {features.map((feature) => {
           const coords = feature.geometry?.coordinates;

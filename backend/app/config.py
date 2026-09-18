@@ -27,9 +27,13 @@ class Settings:
     LABEL_MAP_PATH = PROJECT_ROOT / "ml" / "training" / "label_mapping.json"
     MODEL_VERSION = "xgb_v1"
 
-    CORS_ORIGINS = [
-        o.strip() for o in os.getenv("CORS_ORIGINS", "http://localhost:5173").split(",")
-    ]
+    CORS_ORIGINS = list(dict.fromkeys([
+        o.strip() for o in os.getenv(
+            "CORS_ORIGINS",
+            "http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000,http://127.0.0.1:3000"
+        ).split(",") if o.strip()
+    ] + ["http://localhost:5173", "http://127.0.0.1:5173"]))
+
 
 
 settings = Settings()

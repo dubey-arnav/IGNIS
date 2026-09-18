@@ -20,7 +20,7 @@ def map_data(
     end_date: Optional[date] = None,
     min_frp: Optional[float] = None,
     bbox: Optional[str] = None,
-    limit: int = Query(5000, ge=1, le=20000),
+    limit: int = Query(20000, ge=1, le=50000),
     db: Session = Depends(get_db),
 ):
     """GeoJSON FeatureCollection — the format Leaflet consumes natively."""
