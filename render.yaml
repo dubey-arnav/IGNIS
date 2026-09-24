@@ -9,6 +9,8 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.9
+      - key: PYTHONPATH
+        value: .
       - key: RUN_SCHEDULER_IN_APP
         value: "true"
       - key: AUTOMATION_INTERVAL_MINUTES
