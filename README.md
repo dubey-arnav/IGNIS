@@ -292,25 +292,14 @@ For detailed step-by-step instructions, see [DEPLOYMENT.md](DEPLOYMENT.md) and [
 
 ## Project Contributors
 
-IGNIS was conceptualized, architected, and engineered by a multidisciplinary team under the technical leadership and overall supervision of **Arnav Dubey**. Each module reflects targeted contributions from team members across data engineering, machine learning, geospatial analytics, and frontend systems:
+IGNIS was developed by a collaborative engineering team under the technical leadership and overall supervision of **Arnav Dubey**:
 
-- **Arnav Dubey** ([@dubey-arnav](https://github.com/dubey-arnav)) — **Team Lead & Systems Architect**
-  Led end-to-end technical direction, system architecture, and production delivery. Designed the PostgreSQL 16 + PostGIS spatial schema, built core database connectivity, developed the FastAPI REST service layer, orchestrated the continuous near-real-time automation pipeline, and implemented the multi-cloud deployment infrastructure (Supabase, Render, Vercel, Docker Compose, Cloudflare).
-
-- **Kush Gandhi** ([@kushgandhi1609](https://github.com/kushgandhi1609)) — **Frontend Development & ML Training**
-  Developed the React 19 web application, Leaflet interactive geospatial map integration with bounding-box querying, Recharts temporal and classification data visualizations, the enterprise dark navy UI design system, and contributed to dataset curation and XGBoost classifier training.
-
-- **Avika Garg** ([@Avika-Garg](https://github.com/avikagarg1809006)) — **Geospatial Infrastructure & Clustering**
-  Engineered the OpenStreetMap (OSM) infrastructure ingestion pipeline for 31,900+ industrial sites, developed PostGIS spatial facility proximity matching algorithms, managed historical satellite dataset extraction, and implemented spatio-temporal DBSCAN persistence clustering.
-
-- **Adyasha Behuria** ([@AdyashaBehuria](https://github.com/adyabehuria)) — **Satellite Ingestion & Geometric Preprocessing**
-  Built the NASA FIRMS Near-Real-Time (NRT) ingestion pipeline, handled PostGIS geometry formatting and GeoJSON spatial transformations, implemented automated data integrity validation, and established initial project dependency configurations.
-
-- **Krishna Bansal** ([@walter-sr](https://github.com/walter-sr)) — **Risk Modeling & Explainable AI**
-  Designed the continuous risk scoring algorithms (0–100 scale), generated baseline risk score training datasets, and implemented machine learning model explainability and feature importance analysis using SHAP.
-
-- **Yash Jain** ([@jainyash](https://github.com/jainyash)) — **Remote Sensing & Satellite Imagery Context**
-  Integrated the Copernicus / Sentinel Hub satellite API, established OAuth2 authentication and verification testing, built automated high-resolution imagery acquisition workflows, and extracted multi-spectral contextual features for thermal anomalies.
+- **Arnav Dubey** ([@dubey-arnav](https://github.com/dubey-arnav)) — **Team Lead & Systems Architect**: End-to-end technical direction, PostGIS database architecture, FastAPI backend services, near-real-time automation pipeline, and cloud deployment.
+- **Kush Gandhi** ([@kushgandhi1609](https://github.com/kushgandhi1609)) — **Frontend & ML**: React 19 dashboard, Leaflet interactive geospatial mapping, Recharts analytics, and XGBoost classifier training.
+- **Avika Garg** ([@Avika-Garg](https://github.com/avikagarg1809006)) — **Geospatial & Clustering**: OpenStreetMap 31.9k industrial sites ingestion, facility proximity matching, and DBSCAN persistence clustering.
+- **Adyasha Behuria** ([@AdyashaBehuria](https://github.com/adyabehuria)) — **Satellite Ingestion**: NASA FIRMS NRT ingestion pipeline, GeoJSON geometric preprocessing, and data validation.
+- **Krishna Bansal** ([@walter-sr](https://github.com/walter-sr)) — **Risk Modeling & XAI**: Continuous risk scoring engine, baseline score dataset generation, and SHAP model explainability.
+- **Yash Jain** ([@jainyash](https://github.com/jainyash)) — **Remote Sensing**: Copernicus Sentinel Hub API integration, automated satellite imagery fetching, and spectral feature extraction.
 
 ---
 
