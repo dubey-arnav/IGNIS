@@ -30,15 +30,45 @@ app.include_router(facilities.router)
 app.include_router(predict.router)
 
 
+_scheduler = None
+
+
 @app.on_event("startup")
-def warm_up():
+def startup_tasks():
+    global _scheduler
     try:
         model_loader.load()
         print("[IGNIS] ML model loaded.")
     except Exception as exc:
         print(f"[IGNIS] WARNING: model not loaded: {exc}")
 
+    # Optionally run background automation pipeline inside FastAPI
+    if os.getenv("RUN_SCHEDULER_IN_APP", "false").lower() in ("true", "1", "yes"):
+        try:
+            from apscheduler.schedulers.background import BackgroundScheduler
+            from datetime import datetime
+            from automation.run_pipeline import run
+
+            interval_minutes = int(os.getenv("AUTOMATION_INTERVAL_MINUTES", "30"))
+            _scheduler = BackgroundScheduler()
+            _scheduler.add_job(run, "interval", minutes=interval_minutes, next_run_time=datetime.now())
+            _scheduler.start()
+            print(f"[IGNIS] In-app automation scheduler started (running every {interval_minutes} mins).")
+        except Exception as exc:
+            print(f"[IGNIS] WARNING: Could not start in-app scheduler: {exc}")
+
+
+@app.on_event("shutdown")
+def shutdown_tasks():
+    global _scheduler
+    if _scheduler:
+        try:
+            _scheduler.shutdown(wait=False)
+            print("[IGNIS] In-app scheduler shut down.")
+        except Exception as exc:
+            print(f"[IGNIS] Error shutting down scheduler: {exc}")
+
 
 @app.get("/")
 def root():
-    return {"name": "IGNIS API", "docs": "/docs", "health": "/api/health"}
+    return {"name": "IGNIS API", "docs": "/docs", "health": "/api/health"}

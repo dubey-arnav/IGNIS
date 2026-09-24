@@ -1,0 +1,94 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    container_name: ignis-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-IGNIS}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-admin}
+    ports:
+      - "5432:5432"
+    volumes:
+      - ignis_db_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-IGNIS}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: ignis-backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_NAME: ${DB_NAME:-IGNIS}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-admin}
+      FIRMS_MAP_KEY: ${FIRMS_MAP_KEY}
+      SENTINEL_CLIENT_ID: ${SENTINEL_CLIENT_ID}
+      SENTINEL_CLIENT_SECRET: ${SENTINEL_CLIENT_SECRET}
+      CORS_ORIGINS: "*"
+    ports:
+      - "8000:8000"
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: ignis-worker
+    restart: unless-stopped
+    command: ["python", "automation/scheduler.py"]
+    depends_on:
+      backend:
+        condition: service_started
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_NAME: ${DB_NAME:-IGNIS}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-admin}
+      FIRMS_MAP_KEY: ${FIRMS_MAP_KEY}
+      SENTINEL_CLIENT_ID: ${SENTINEL_CLIENT_ID}
+      SENTINEL_CLIENT_SECRET: ${SENTINEL_CLIENT_SECRET}
+      AUTOMATION_LOOKBACK_DAYS: ${AUTOMATION_LOOKBACK_DAYS:-2}
+      AUTOMATION_INTERVAL_MINUTES: ${AUTOMATION_INTERVAL_MINUTES:-30}
+      AUTOMATION_LOG_LEVEL: ${AUTOMATION_LOG_LEVEL:-INFO}
+      FIRMS_BBOX: ${FIRMS_BBOX:-68,6,97,37}
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: ignis-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+
+  # Optional 100% Free Cloudflare Tunnel (zero trial, permanent HTTPS URL)
+  # Uncomment if you have a Cloudflare Tunnel token
+  # tunnel:
+  #   image: cloudflare/cloudflared:latest
+  #   container_name: ignis-tunnel
+  #   restart: unless-stopped
+  #   command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
+  #   depends_on:
+  #     - frontend
+
+volumes:
+  ignis_db_data:
+    driver: local
