@@ -20,6 +20,7 @@ class FireClassifier:
     ):
         self.model = xgb.XGBClassifier()
         self.model.load_model(model_path)
+        self.model._estimator_type = "classifier"
         with open(label_map_path) as f:
             label_map = json.load(f)
         self.class_names = [name for name, _ in sorted(label_map.items(), key=lambda kv: kv[1])]

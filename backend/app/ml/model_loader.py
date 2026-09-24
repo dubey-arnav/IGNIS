@@ -20,6 +20,7 @@ def load():
             return _state
         model = xgb.XGBClassifier()
         model.load_model(str(settings.MODEL_PATH))
+        model._estimator_type = "classifier"
         with open(settings.FEATURE_CONFIG_PATH) as f:
             feature_config = json.load(f)
         with open(settings.LABEL_MAP_PATH) as f:
