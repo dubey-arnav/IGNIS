@@ -292,16 +292,25 @@ For detailed step-by-step instructions, see [DEPLOYMENT.md](DEPLOYMENT.md) and [
 
 ## Project Contributors
 
-IGNIS was designed and developed by a dedicated multi-disciplinary team. All contributions below are mapped directly to verified repository commits:
+IGNIS was conceptualized, architected, and engineered by a multidisciplinary team under the technical leadership and overall supervision of **Arnav Dubey**. Each module reflects targeted contributions from team members across data engineering, machine learning, geospatial analytics, and frontend systems:
 
-| Contributor | Engineering Focus & Responsibilities | Key Components & Commits |
-| :--- | :--- | :--- |
-| **Arnav Dubey**<br>([@dubey-arnav](https://github.com/dubey-arnav)) | **System Architecture, Backend & Production Deployment Lead** | • Core project & repository architecture<br>• PostgreSQL 16 + PostGIS schema design & connection pool (`schema.sql`, `db_connect.py`)<br>• FastAPI REST API controllers & router endpoints<br>• In-App near-real-time automation pipeline orchestration<br>• End-to-end production deployment (Supabase, Render, Vercel, Docker Compose, Cloudflare) |
-| **Kush Gandhi**<br>([@kushgandhi1609](https://github.com/kushgandhi1609)) | **Frontend Development & ML Model Training** | • Complete frontend application development (React 19 + Vite)<br>• Interactive Leaflet geospatial map integration & filtering<br>• Recharts temporal and classification data visualizations<br>• Enterprise dark navy UI design system (`index.css`)<br>• ML dataset curation, train/test splitting & XGBoost classifier training (`train_model.py`) |
-| **Avika Garg**<br>([@Avika-Garg](https://github.com/avikagarg1809006)) | **Geospatial Infrastructure & Clustering** | • OpenStreetMap (OSM) infrastructure ingestion (31,900+ facilities across India)<br>• PostGIS spatial facility matching engine (`match_facilities.py`)<br>• Historical NASA FIRMS dataset acquisition (`download_historical_firms.py`)<br>• Spatio-temporal DBSCAN clustering & persistence statistics (`cluster_detections.py`)<br>• Labeling candidate generation for model training |
-| **Adyasha Behuria**<br>([@AdyashaBehuria](https://github.com/adyabehuria)) | **Satellite Ingestion & Geometric Preprocessing** | • NASA FIRMS Near-Real-Time (NRT) ingestion pipeline (`download_firms.py`, `clean_firms.py`)<br>• PostGIS geometry preparation & GeoJSON transformations (`prepare_geometry.py`, `firms_geo.geojson`)<br>• Thermal event database insertion & data integrity validation (`insert_firms.py`)<br>• Initial project environment & dependency setup |
-| **Yash Jain**<br>([@jainyash](https://github.com/jainyash)) | **Remote Sensing & Satellite Imagery Context** | • Copernicus / Sentinel Hub satellite API integration<br>• OAuth2 Sentinel authentication & test harness (`test_auth.py`)<br>• Automated high-resolution imagery acquisition pipeline (`fetch_sentinel.py`)<br>• Multi-spectral feature extraction for thermal anomaly context |
-| **Walter**<br>([@walter-sr](https://github.com/walter-sr)) | **Risk Modeling & Explainable AI (XAI)** | • Continuous risk scoring algorithm design ($0 - 100$ scale, `risk_score.py`)<br>• Generation of baseline risk score datasets (`data/risk_scores.csv`)<br>• Model Explainability & Interpretability implementation using SHAP (`explain_model.py`) |
+- **Arnav Dubey** ([@dubey-arnav](https://github.com/dubey-arnav)) — **Team Lead & Systems Architect**
+  Led end-to-end technical direction, system architecture, and production delivery. Designed the PostgreSQL 16 + PostGIS spatial schema, built core database connectivity, developed the FastAPI REST service layer, orchestrated the continuous near-real-time automation pipeline, and implemented the multi-cloud deployment infrastructure (Supabase, Render, Vercel, Docker Compose, Cloudflare).
+
+- **Kush Gandhi** ([@kushgandhi1609](https://github.com/kushgandhi1609)) — **Frontend Development & ML Training**
+  Developed the React 19 web application, Leaflet interactive geospatial map integration with bounding-box querying, Recharts temporal and classification data visualizations, the enterprise dark navy UI design system, and contributed to dataset curation and XGBoost classifier training.
+
+- **Avika Garg** ([@Avika-Garg](https://github.com/avikagarg1809006)) — **Geospatial Infrastructure & Clustering**
+  Engineered the OpenStreetMap (OSM) infrastructure ingestion pipeline for 31,900+ industrial sites, developed PostGIS spatial facility proximity matching algorithms, managed historical satellite dataset extraction, and implemented spatio-temporal DBSCAN persistence clustering.
+
+- **Adyasha Behuria** ([@AdyashaBehuria](https://github.com/adyabehuria)) — **Satellite Ingestion & Geometric Preprocessing**
+  Built the NASA FIRMS Near-Real-Time (NRT) ingestion pipeline, handled PostGIS geometry formatting and GeoJSON spatial transformations, implemented automated data integrity validation, and established initial project dependency configurations.
+
+- **Krishna Bansal** ([@walter-sr](https://github.com/walter-sr)) — **Risk Modeling & Explainable AI**
+  Designed the continuous risk scoring algorithms (0–100 scale), generated baseline risk score training datasets, and implemented machine learning model explainability and feature importance analysis using SHAP.
+
+- **Yash Jain** ([@jainyash](https://github.com/jainyash)) — **Remote Sensing & Satellite Imagery Context**
+  Integrated the Copernicus / Sentinel Hub satellite API, established OAuth2 authentication and verification testing, built automated high-resolution imagery acquisition workflows, and extracted multi-spectral contextual features for thermal anomalies.
 
 ---
 
