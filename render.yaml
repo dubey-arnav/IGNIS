@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: ignis-api
+    runtime: python
+    plan: free
+    region: singapore
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT --app-dir backend
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: RUN_SCHEDULER_IN_APP
+        value: "true"
+      - key: AUTOMATION_INTERVAL_MINUTES
+        value: "30"
+      - key: DB_HOST
+        value: aws-0-ap-northeast-2.pooler.supabase.com
+      - key: DB_PORT
+        value: "5432"
+      - key: DB_NAME
+        value: postgres
+      - key: DB_USER
+        value: postgres.xihqnnosmnbgopwulnug
+      - key: DB_PASSWORD
+        value: IGNIS_SIH_1234
+      - key: FIRMS_MAP_KEY
+        value: a202cb6ee349bacce1a87449dd3b7605
+      - key: SENTINEL_CLIENT_ID
+        value: sh-f1cd15c3-bf5b-4b5a-8bae-cb269dda706f
+      - key: SENTINEL_CLIENT_SECRET
+        value: mul3qUz85FWBef6KMWHWSqFQVspL7Dc8
+      - key: CORS_ORIGINS
+        value: "*"

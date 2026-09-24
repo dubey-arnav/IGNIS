@@ -21,15 +21,17 @@ from automation.steps.db_writer import ensure_schema, upsert_risk_score
 
 load_dotenv()
 
-os.makedirs("automation/logs", exist_ok=True)
+log_handlers = [logging.StreamHandler()]
+try:
+    os.makedirs("automation/logs", exist_ok=True)
+    log_handlers.append(logging.FileHandler(f"automation/logs/run_{datetime.now():%Y%m%d_%H%M%S}.log"))
+except Exception:
+    pass
 
 logging.basicConfig(
     level=os.getenv("AUTOMATION_LOG_LEVEL", "INFO"),
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-    handlers=[
-        logging.FileHandler(f"automation/logs/run_{datetime.now():%Y%m%d_%H%M%S}.log"),
-        logging.StreamHandler(),
-    ],
+    handlers=log_handlers,
 )
 logger = logging.getLogger("ignis.automation.pipeline")
 

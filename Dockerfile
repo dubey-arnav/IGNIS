@@ -5,11 +5,11 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PROJECT_ROOT=/app \
     PYTHONPATH=/app:/app/backend \
-    PORT=8000
+    PORT=7860
 
 WORKDIR /app
 
-# Install system dependencies needed for compiling C-extensions (psycopg2, xgboost)
+# Install system dependencies needed for psycopg2, xgboost, and curl
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     g++ \
@@ -21,14 +21,21 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY backend/requirements.txt /app/backend_requirements.txt
 RUN pip install --no-cache-dir -r /app/backend_requirements.txt
 
-# Copy application directories
-COPY ml/ /app/ml/
-COPY automation/ /app/automation/
-COPY backend/ /app/backend/
-COPY database/ /app/database/
-COPY data/ /app/data/
+# Create a non-root user (UID 1000 is required by Hugging Face Spaces)
+RUN useradd -m -u 1000 user && \
+    mkdir -p /app/automation/logs && \
+    chown -R user:user /app
 
-EXPOSE 8000
+# Copy application directories with proper ownership
+COPY --chown=user:user ml/ /app/ml/
+COPY --chown=user:user automation/ /app/automation/
+COPY --chown=user:user backend/ /app/backend/
+COPY --chown=user:user database/ /app/database/
+COPY --chown=user:user data/ /app/data/
 
-# Support dynamic PORT environment variable (Hugging Face Spaces, Koyeb, Render, etc.)
-CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --app-dir backend"]
+USER 1000
+
+EXPOSE 7860
+
+# Run uvicorn on $PORT (defaults to 7860 for HF Spaces, or whatever cloud platform injects)
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-7860} --app-dir backend"]
